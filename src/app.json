@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/plugins/yxnet/main",
     "pages/plugins/yxlogger/main",
     "pages/index/main",
     "pages/logs/main"

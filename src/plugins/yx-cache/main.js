@@ -16,6 +16,8 @@ var YxCache = {
   PLATFORM_WX:'wx', //微信
   PLATFORM_TT:'tt', //头条
   PLATFORM_MY:'my', //蚂蚁
+  PLATFORM_WEEX:'weex', //week
+  PLATFORM_SWAN:'swan', //百度智能小程序
   
   CACHE_NAME:'_cache_', //cache标识
   CACHE_TIME:'_time_', //缓存时间

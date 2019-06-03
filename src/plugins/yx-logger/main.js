@@ -25,7 +25,11 @@ var YxLogger = {
   OUTPUT_WAY_SERVER:'server',
   
   //日志平台
-  PLATFORM_WX: 'wx',
+  PLATFORM_WX:'wx', //微信
+  PLATFORM_TT:'tt', //头条
+  PLATFORM_MY:'my', //蚂蚁
+  PLATFORM_WEEX:'weex', //week
+  PLATFORM_SWAN:'swan', //百度智能小程序
   
   //日志等级
   LOGGER_DEBUG:'debug',
