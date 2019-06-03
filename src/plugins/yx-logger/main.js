@@ -25,7 +25,11 @@ var YxLogger = {
   OUTPUT_WAY_SERVER:'server',
   
   //日志平台
-  PLATFORM_WX: 'wx',
+  PLATFORM_WX:'wx', //微信
+  PLATFORM_TT:'tt', //头条
+  PLATFORM_MY:'my', //蚂蚁
+  PLATFORM_WEEX:'weex', //week
+  PLATFORM_SWAN:'swan', //百度智能小程序
   
   //日志等级
   LOGGER_DEBUG:'debug',
@@ -177,8 +181,12 @@ var YxLogger = {
    * @returns {*}
    */
   getPath:(obj)=>{
-    if(YxLogger.platform == 'wx'){
-      return YxLogger.getWxPath(obj)
+    if(typeof(obj) == 'string'){
+      return obj
+    }else if (typeof(obj) == 'object'){
+      if(YxLogger.platform == 'wx'){
+        return YxLogger.getWxPath(obj)
+      }
     }else{
       return "xxx"
     }
