@@ -1,4 +1,4 @@
-import yxlogger from 'yx-logger'
+import YxLogger from 'yx-logger'
 import dayjs from 'dayjs'
 /**
  *     接口缓存，怎么判断一个接口是不是缓存接口，在action做判断
@@ -33,7 +33,7 @@ var YxCache = {
     }else if(YxCache.platform == YxCache.PLATFORM_MY){
       my.clearStorage()
     }else{
-      yxlogger.error(tag, 'clearStorage', '没有找到平台')
+      YxLogger.error(tag, 'clearStorage', '没有找到平台')
     }
   },
   
@@ -48,7 +48,7 @@ var YxCache = {
     }else if(YxCache.platform == YxCache.PLATFORM_MY){
       my.clearStorageSync()
     }else{
-      yxlogger.error(tag, 'clearStorageSync', '没有找到平台')
+      YxLogger.error(tag, 'clearStorageSync', '没有找到平台')
     }
   },
   
@@ -91,12 +91,12 @@ var YxCache = {
           }
         })
       }else{
-        yxlogger.error(tag, 'getStorage', '没有找到平台')
+        YxLogger.error(tag, 'getStorage', '没有找到平台')
         callback(null)
       }
     }catch (err){
       //throw new YxLogger.except(tag, 'getStorage', err.name, err.message)
-      yxlogger.error(tag, 'getStorage', err.name + err.message)
+      YxLogger.error(tag, 'getStorage', err.name + err.message)
       callback(null)
     }
     
@@ -115,11 +115,11 @@ var YxCache = {
       }else if(YxCache.platform == YxCache.PLATFORM_MY){
         return my.getStorageSync(key)
       }else{
-        yxlogger.error(tag, 'getStorageSync', '没有找到平台')
+        YxLogger.error(tag, 'getStorageSync', '没有找到平台')
         return ""
       }
     }catch(err){
-      yxlogger.error(tag, 'getStorageSync', err.name + err.message)
+      YxLogger.error(tag, 'getStorageSync', err.name + err.message)
       return ""
       //throw new YxLogger.except(tag, 'getStorageSync', err.name, err.message)
     }
@@ -151,10 +151,10 @@ var YxCache = {
            data:data
          })
        }else{
-         yxlogger.error(tag, 'setStorage', '没有找到平台')
+         YxLogger.error(tag, 'setStorage', '没有找到平台')
        }
      }catch(err) {
-       yxlogger.error(tag, 'setStorage', err.name + err.message)
+       YxLogger.error(tag, 'setStorage', err.name + err.message)
        //throw new YxLogger.except(tag, 'setStorage', err.name, err.message)
      }
   },
@@ -182,10 +182,10 @@ var YxCache = {
           data:data
         })
       }else{
-        yxlogger.error(tag, 'setStorageSync', '没有找到平台')
+        YxLogger.error(tag, 'setStorageSync', '没有找到平台')
       }
     }catch(err) {
-      yxlogger.error(tag, 'setStorageSync', err.name + err.message)
+      YxLogger.error(tag, 'setStorageSync', err.name + err.message)
       //throw new YxLogger.except(tag, 'setStorageSync', err.name, err.message)
     }
   },
@@ -211,14 +211,19 @@ var YxCache = {
    *    保存缓存数据
    * @param key : json数组，包含了action, param
    *
-   * @param data
+   * @param datas
    */
-  setInterfaceCache:(keys, data)=>{
+  setInterfaceCache:(keys, datas)=>{
+     YxLogger.debug(tag, 'setInterfaceCache', keys.action + '不是一个缓存接口')
      try{
-        var enKey = encodeURIComponent(JSON.stringify(key))
+       if(!YxCache.isCacheInterface(keys.action)) {
+         YxLogger.debug(tag, 'setInterfaceCache', keys.action + '不是一个缓存接口')
+         return
+       }
+        var enKey = encodeURIComponent(JSON.stringify(keys))
         YxCache.setStorage(enKey,{
           time: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-          data:data
+          data:datas
         })
      }catch(err){
      
@@ -242,7 +247,7 @@ var YxCache = {
   
       //是否是缓存接口
       var action = keys.action
-      if(action.indexOf(YxCache.CACHE_NAME) == -1) {
+      if(!YxCache.isCacheInterface(action)) {
         return ""
       }
   
@@ -267,9 +272,19 @@ var YxCache = {
         return valueJson.data
       }
     }catch (err){
-      yxlogger.error(tag, 'getInterfaceCache', "keys:" + JSON.stringify(keys)  + "=>"+ err.name + err.message)
+      YxLogger.error(tag, 'getInterfaceCache', "keys:" + JSON.stringify(keys)  + "=>"+ err.name + err.message)
       return ""
     }
+  },
+  /**
+   *   当前接口是不是缓存接口
+   * @param action
+   */
+  isCacheInterface:(action)=>{
+    if(action.indexOf(YxCache.CACHE_NAME) == -1) {
+      return false
+    }
+    return true
   },
   
   

@@ -4,9 +4,17 @@
 
 import YxLogger from "yx-logger";
 
+import YxCache from '../yx-cache/main'
+
 var FLY_MY = require("flyio/dist/npm/ap")
 var FLY = require("flyio/dist/npm/wx")
-var FLY_WEEX = require("flyio/dist/npm/weex")
+var FLY_WEEX = null
+try{
+   FLY_WEEX = require("flyio/dist/npm/weex")
+}catch(err) {
+  //console.error("YxFly -> 不是app平台无法导入weex库")
+}
+
 var TAG = 'YxFly'
 
 
@@ -52,7 +60,7 @@ var YxFly = {
   
   /** 设置全局请求的url **/
   setUrl:(url)=>{
-    YxFly.config.baseURL = url
+    YxFly.fly.config.baseURL = url
   },
   /**
    *    网络请求接口
@@ -62,7 +70,25 @@ var YxFly = {
    * @returns {Promise<any>}
    */
   netReq:(method, action, param)=>{
+    
     return new Promise((resolve,reject) =>{
+      
+      var keys = {
+        action:action,
+        param:param
+      }
+      var cacheData = YxCache.getInterfaceCache(keys)
+      
+      console.log(cacheData)
+      
+      if(cacheData != null && cacheData != ""){
+        YxLogger.debug(TAG, 'netReq', '从缓存获取接口<' + action + '>获取数据')
+        resolve(cacheData)
+        return
+      }
+  
+      YxLogger.debug(TAG, 'netReq', '从网络接口<' + action + '>获取数据')
+      
       YxFly.fly.request(
         action,
         param,
@@ -72,6 +98,7 @@ var YxFly = {
           if (YxFly.platform === 'my') { //蚂蚁小程序
             resolve(JSON.parse(res.data))
           } else { //微信小程序、头条小程序、百度小程序
+            YxCache.setInterfaceCache(keys,res.data)
             resolve(res.data)
           }
         }catch (err){
