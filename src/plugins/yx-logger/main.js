@@ -177,8 +177,12 @@ var YxLogger = {
    * @returns {*}
    */
   getPath:(obj)=>{
-    if(YxLogger.platform == 'wx'){
-      return YxLogger.getWxPath(obj)
+    if(typeof(obj) == 'string'){
+      return obj
+    }else if (typeof(obj) == 'object'){
+      if(YxLogger.platform == 'wx'){
+        return YxLogger.getWxPath(obj)
+      }
     }else{
       return "xxx"
     }

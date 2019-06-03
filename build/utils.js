@@ -71,8 +71,8 @@ exports.cssLoaders = function (options) {
     wxss: generateLoaders(),
     postcss: generateLoaders(),
     less: generateLoaders('less'),
-    sass: generateLoaders('sass', { indentedSyntax: true }, sassResourceLoader),
-    scss: generateLoaders('sass', sassResourceLoader),
+    sass: generateLoaders('sass', { indentedSyntax: true },sassResourceLoader),
+    scss: generateLoaders('sass',{},sassResourceLoader),
     stylus: generateLoaders('stylus'),
     styl: generateLoaders('stylus')
   }
@@ -122,7 +122,7 @@ var sassResourceLoader = {
   loader: 'sass-resources-loader',
   options: {
     resources: [
-      path.resolve(__dirname, '../src/assets/variables.scss'),
+      path.resolve(__dirname, '../src/assets/glober.scss'),
     ]
   }
 }
