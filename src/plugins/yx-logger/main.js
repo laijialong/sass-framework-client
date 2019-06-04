@@ -155,13 +155,13 @@ var YxLogger = {
    *    获得日志缓存
    * @returns {null}
    */
-  getCache:()=>{
+  getCache:(callback)=>{
     try{
       if(YxLogger.platform == YxLogger.PLATFORM_WX){
         wx.getStorage({
           key: YxLogger.LOGGER_NAME,
           success: function(res) {
-            return res.data
+              callback(res.data)
           }
         })
       }

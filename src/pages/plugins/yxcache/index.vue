@@ -16,18 +16,49 @@
   export default {
     name:"index",
 
+    key1: 'one',
+
     onLoad(options){
-       //this.setCache()
-      this.setNetCacheInterface()
+       //this.testCacheSync(this.key1)
+
+        //this.testRemoveCache(this.key1)
+
+      //this.setNetCacheInterface()
     },
 
     methods:{
 
-      setCache(){
+    	testRemoveCache(key){
+    		 YxCache.removeStorageSync(key);
 
-         YxCache.setStorageSync("one" ,"天气")
+	       this.testShowCache(true)
+      },
 
-         YxCache.getStorageSync('one')
+	    /**
+       *  测试显示所有缓存信息
+       * @param isSync
+       */
+      testShowCache(isSync){
+    		 if(!isSync){
+             YxCache.getStorageInfo((res)=>{
+               console.log(res)
+             })
+         }else{
+    		 	  var res = YxCache.getStorageInfoSync();
+    		 	  console.log(res)
+
+         }
+
+      },
+
+	    /**
+       *  测试同步的缓存保存和获取
+        */
+      testCacheSync(key){
+
+         YxCache.setStorageSync(key ,"天气")
+
+         YxCache.getStorageSync(key)
       },
 
       setNetCacheInterface(){
