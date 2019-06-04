@@ -38,4 +38,41 @@
     
     platform： 当前日志输出平台
     
-        PLATFORM_WX: 'wx',
+          PLATFORM_WX:'wx', //微信
+          PLATFORM_TT:'tt', //头条
+          PLATFORM_MY:'my', //蚂蚁
+          PLATFORM_WEEX:'weex', //week
+          PLATFORM_SWAN:'swan', //百度智能小程序
+          
+* 提供方法
+    
+        setIsLogger:(isLogger) ：设置是否打印日志
+        setLevel:(level) ： 设置日志输出等级
+        setOutputWay:(output)： 设置日志输出方式
+        setUrl:(url)： 设置日志输出地址
+        setPlatform:(platform)： 设置日志输出平台
+        setMaxLogCacheCount:(maxLogCacheCount)： 设置日志输入超过多少条后会存入缓存
+        getCache:(callback)： 获得缓存里面的内容，
+            调用方法：
+            YxLogger.getCache((res)=>{
+                console.log(res)
+            })
+            
+* 关于缓存的输出方式：
+
+    1. 设置输出为缓存时，默认需要调用setMaxLogCacheCount设置输入日志达到多少条以后写入缓存
+    
+    2. 如果不设置，默认1000条
+    
+    3. 应用程序退出以及异常的时候，需要保存当前缓存
+    
+    4. 遗留个问题就是退出了在进来，缓存继承问题，待后续讨论
+    
+* 自定义异常
+
+        try{
+            throw new YxLogger.except(this, 'testException', '自定义异常', '异常信息')
+        }catch (err){
+            console.log("name:" + err.name + ",info:" + err.message)
+        }
+        

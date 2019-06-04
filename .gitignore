@@ -1,3 +1,6 @@
 # Build and Release Folders
 node_modules/
 dist/
+.idea/
+.idea/markdown-navigator.xml
+*.xml

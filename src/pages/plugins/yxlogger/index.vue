@@ -8,36 +8,69 @@
 </template>
 
 <script>
-  import dayjs from 'dayjs'
+  import YxLogger from '../../../plugins/yx-logger/main'
 
   export default {
     name:"index",
 
     onLoad(options){
 
-      console.log(dayjs("2019-06-03 13:49:57").add(500,'minute').format("YYYY-MM-DD HH:mm:ss"))
+      //this.testLoggerPrint();
 
-      var flag = dayjs().isBefore(dayjs("2019-06-03 13:49:57").add(5,'minute'))
-      console.log(flag)
+      //this.testSetPlatform(YxLogger.PLATFORM_WX);
 
-      this.$log.setLevel("debug")
-      this.$log.setOutputWay(this.$log.OUTPUT_WAY_CONSOLE)
-      this.$log.setMaxLogCacheCount(4)
-      this.$log.debug(this, "onLoad", "info")
-      this.$log.info(this, "main", "info")
-      this.$log.warn(this, "main", "info")
-      this.$log.error(this, "main", "info")
+      //this.testSetLevel(YxLogger.LOGGER_INFO);
 
-      this.$log.getCache((info)=>{
-         console.log(info)
-      })
+       //this.testOutputWay(YxLogger.OUTPUT_WAY_CACHE)
 
-      try{
-        throw new this.$log.except(this, 'onLoad', '数据xx', 'onLoad')
-      }catch(err){
-         console.log(err)
-      }
+        this.testException()
 
+    },
+
+    methods:{
+
+        testLoggerPrint(){
+           this.printLog()
+        },
+
+        testException(){
+            try{
+                throw new YxLogger.except(this, 'testException', '自定义异常', '异常信息')
+            }catch (err){
+                console.log("name:" + err.name + ",info:" + err.message)
+            }
+        },
+
+        testSetPlatform(platform){
+          YxLogger.setPlatform(platform);
+
+          this.printLog()
+        },
+
+        testSetLevel(level){
+
+            YxLogger.setLevel(level);
+
+            this.printLog()
+        },
+
+        testOutputWay(way){
+
+            YxLogger.setOutputWay(way)
+            YxLogger.setMaxLogCacheCount(3)
+            this.printLog()
+
+            YxLogger.getCache((res)=>{
+                console.log(res)
+            })
+        },
+
+        printLog(){
+            YxLogger.debug(this, 'printLog', 'debug')
+            YxLogger.info(this, 'printLog', 'info')
+            YxLogger.warn(this, 'printLog', 'warn')
+            YxLogger.error(this, 'printLog', 'error')
+        }
     }
   }
 </script>

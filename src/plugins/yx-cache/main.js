@@ -13,6 +13,8 @@ var YxCache = {
   
   platform:'wx', //日志输出平台
   
+  isDebug:true, //是否打印日志
+  
   PLATFORM_WX:'wx', //微信
   PLATFORM_TT:'tt', //头条
   PLATFORM_MY:'my', //蚂蚁
@@ -21,18 +23,37 @@ var YxCache = {
   
   CACHE_NAME:'_cache_', //cache标识
   CACHE_TIME:'_time_', //缓存时间
-  
-  /**
-   * 清除本地数据缓存的异步接口。
-   */
-  clearStorage:()=>{
+	/**
+	 *  设置平台
+	 * @param platform
+	 */
+	setPlatform:(platform)=>{
+  	    YxCache.platform = platform
+	},
+	/**
+	 *  异步清理缓存
+	 * @param callback : 回调函数，成功为true, 失败返回false
+	 */
+	clearStorage:(callback)=>{
     if(YxCache.platform == YxCache.PLATFORM_WX){
-      wx.clearStorage()
+        wx.clearStorage(
+	        {
+		        success(res){
+		            callback(true)
+		        },
+		        fail(err){
+			        callback(false)
+		        }
+	        }
+        )
     }else if(YxCache.platform == YxCache.PLATFORM_TT){
-      tt.clearStorage()
+        tt.clearStorage()
     }else if(YxCache.platform == YxCache.PLATFORM_MY){
-      my.clearStorage()
-    }else{
+        my.clearStorage()
+    }else if(YxCache.platform == YxCache.PLATFORM_SWAN){
+        swan.clearStorage()
+    }
+    else{
       YxLogger.error(tag, 'clearStorage', '没有找到平台')
     }
   },
@@ -108,16 +129,22 @@ var YxCache = {
    */
   getStorageSync:(key)=>{
     try{
+      var values = ""
       if(YxCache.platform == YxCache.PLATFORM_WX){
-        return wx.getStorageSync(key)
+        values = wx.getStorageSync(key)
       }else if(YxCache.platform == YxCache.PLATFORM_TT){
-        return tt.getStorageSync(key)
+        values = tt.getStorageSync(key)
       }else if(YxCache.platform == YxCache.PLATFORM_MY){
-        return my.getStorageSync(key)
+        values = my.getStorageSync(key)
       }else{
         YxLogger.error(tag, 'getStorageSync', '没有找到平台')
-        return ""
       }
+      if(YxCache.isDebug){
+        console.log("getStorageSync===>key:" + key)
+        console.log(values)
+        console.log("getStorageSync===>end")
+      }
+      return values
     }catch(err){
       YxLogger.error(tag, 'getStorageSync', err.name + err.message)
       return ""
@@ -134,12 +161,20 @@ var YxCache = {
    * @param data
    */
   setStorage:(key,data)=>{
+    if(YxCache.isDebug){
+      console.log("setStorage===>key:" + key)
+      console.log(data)
+      console.log("setStorage===>end")
+    }
+    
+    
      try{
        if(YxCache.platform == YxCache.PLATFORM_WX){
          wx.setStorage({
            key:key,
            data:data
-         })
+         },
+         )
        }else if(YxCache.platform == YxCache.PLATFORM_TT){
          tt.setStorage({
            key:key,
@@ -165,22 +200,20 @@ var YxCache = {
    * @param data
    */
   setStorageSync:(key,data)=>{
+    if(YxCache.isDebug){
+      console.log("setStorageSync===>key:" + key)
+      console.log(data)
+      console.log("setStorageSync===>end")
+    }
     try{
       if(YxCache.platform == YxCache.PLATFORM_WX){
-        wx.setStorageSync({
-          key:key,
-          data:data
-        })
+        wx.setStorageSync(key, data)
       }else if(YxCache.platform == YxCache.PLATFORM_TT){
-        tt.setStorageSync({
-          key:key,
-          data:data
-        })
+        tt.setStorageSync(key, data)
       }else if(YxCache.platform == YxCache.PLATFORM_MY){
-        my.setStorageSync({
-          key:key,
-          data:data
-        })
+        my.setStorageSync(key, data)
+      }else if(YxCache.platform == YxCache.PLATFORM_SWAN){
+        swan.setStorageSync(key, data)
       }else{
         YxLogger.error(tag, 'setStorageSync', '没有找到平台')
       }
@@ -189,22 +222,76 @@ var YxCache = {
       //throw new YxLogger.except(tag, 'setStorageSync', err.name, err.message)
     }
   },
-  
-  
-  getStorageInfo:()=>{
-  
+    /**
+     *
+     * @param callback
+     */
+  getStorageInfo:(callback)=>{
+      try{
+          if(YxCache.platform == YxCache.PLATFORM_WX){
+              wx.getStorageInfo({
+                  success (res) {
+                      callback(res)
+                      if(YxCache.isDebug){
+                          YxLogger.debug(tag,'getStorageInfo', "keys:" + JSON.stringify(res.keys)
+	                          + ",size:" + res.currentSize + ",limitSize:" + res.limitSize)
+                      }
+                  }
+              })
+          }
+      }catch (err){
+          YxLogger.error(tag, 'getStorageInfo', err.name + err.message)
+      }
+
   },
-  
-  getStorageInfoSync:()=>{
-  
+	/**
+	 *  同步获得缓存信息
+	 */
+	getStorageInfoSync:()=>{
+     try{
+	     if(YxCache.platform == YxCache.PLATFORM_WX){
+		     const res = wx.getStorageInfoSync()
+		     return res
+		     if(YxCache.isDebug){
+			     YxLogger.debug(tag,'getStorageInfoSync',
+				     "keys:" + JSON.stringify(res.keys)
+				     + "size:" + res.currentSize
+				     + ",limitSize:" + res.limitSize)
+		     }
+	     }
+     }catch (err){
+	     YxLogger.error(tag, 'getStorageInfoSync', err.name + err.message)
+     }
   },
   
   removeStorage:()=>{
-  
+     try{
+	     if(YxCache.platform == YxCache.PLATFORM_WX){
+		     wx.removeStorage({
+			     key: 'key',
+			     success (res) {
+				     if(YxCache.isDebug){
+					     YxLogger.debug(tag,'removeStorage','移除成功')
+				     }
+			     }
+		     })
+	     }
+     }catch (err){
+	     YxLogger.error(tag, 'removeStorage', err.name + err.message)
+     }
   },
   
-  removeStorageSync:()=>{
-  
+  removeStorageSync:(key)=>{
+	  try{
+		  if(YxCache.platform == YxCache.PLATFORM_WX){
+			  wx.removeStorageSync(key)
+			  if(YxCache.isDebug){
+				  YxLogger.debug(tag,'removeStorageSync','移除成功,key:' + key)
+			  }
+		  }
+	  }catch (err){
+		  YxLogger.error(tag, 'removeStorage', err.name + err.message)
+	  }
   },
   
   /**
@@ -214,20 +301,26 @@ var YxCache = {
    * @param datas
    */
   setInterfaceCache:(keys, datas)=>{
-     YxLogger.debug(tag, 'setInterfaceCache', keys.action + '不是一个缓存接口')
-     try{
-       if(!YxCache.isCacheInterface(keys.action)) {
+      try{
+      if(!YxCache.isCacheInterface(keys.action)) {
+        if(YxCache.isDebug){
          YxLogger.debug(tag, 'setInterfaceCache', keys.action + '不是一个缓存接口')
-         return
-       }
-        var enKey = encodeURIComponent(JSON.stringify(keys))
-        YxCache.setStorage(enKey,{
-          time: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-          data:datas
-        })
-     }catch(err){
-     
-     }
+        }
+        return
+      }
+      
+      var enKey = encodeURIComponent(JSON.stringify(keys))
+      if(YxCache.isDebug){
+        YxLogger.debug(tag, 'setInterfaceCache', "key=" + enKey)
+      }
+      
+      YxCache.setStorageSync(enKey,{
+        time: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+        data:datas
+      })
+      }catch(err){
+      
+      }
   },
   /**
    *    获取接口的缓存
@@ -248,27 +341,51 @@ var YxCache = {
       //是否是缓存接口
       var action = keys.action
       if(!YxCache.isCacheInterface(action)) {
+        if(YxCache.isDebug){
+          YxLogger.debug(tag, 'getInterfaceCache', keys.action + '不是一个缓存接口')
+        }
         return ""
       }
   
       var key = encodeURIComponent(JSON.stringify(keys))
+      if(YxCache.isDebug){
+          YxLogger.debug(tag, 'getInterfaceCache', "key=" + key)
+      }
+
       var valueJson = YxCache.getStorageSync(key)
-      if(valueJson !== undefined || valueJson != '' || valueJson != null)
+      if(valueJson == '' || valueJson == null)
       {//是否有该缓存的值
-        return ""
+          if(YxCache.isDebug){
+              YxLogger.debug(tag, 'getInterfaceCache', "没有找到key=" + key + "的值")
+          }
+          return ""
       }
       
       //key判断
       var cacheTime = 5
       if(action.indexOf(YxCache.CACHE_TIME) != -1) {
-        cacheTime = action.split(YxCache.CACHE_TIME)[1]
+          cacheTime = action.split(YxCache.CACHE_TIME)[1]
+          if(YxCache.isDebug){
+              YxLogger.debug(tag, 'getInterfaceCache', "获取接口定义的缓存时间:" + cacheTime + '分钟')
+          }
       }
       
       //比较缓存数据内的时间+缓存时间是否大于了当前时间
-      var flag = dayjs().isBefore(dayjs(valueJson.time).add(cacheTime,'minute'))
-      if(flag){
+      var beforDayjs = dayjs(valueJson.time).add(cacheTime,'minute')
+      var flag = dayjs().isBefore(beforDayjs)
+      if(!flag){
+        if(YxCache.isDebug){
+            YxLogger.debug(tag, 'getInterfaceCache', "当前时间已经超过了缓存时间"
+                + ":缓存过期时间:" + beforDayjs.format("YYYY-MM-DD HH:mm:ss")
+                + ",当前时间:" + dayjs().format("YYYY-MM-DD HH:mm:ss"))
+        }
         return ""
       }else{
+        if(YxCache.isDebug){
+            YxLogger.debug(tag, 'getInterfaceCache', "在缓存有效期时间内"
+                + ":缓存过期时间:" + beforDayjs.format("YYYY-MM-DD HH:mm:ss")
+                + ",当前时间:" + dayjs().format("YYYY-MM-DD HH:mm:ss"))
+        }
         return valueJson.data
       }
     }catch (err){
@@ -286,6 +403,13 @@ var YxCache = {
     }
     return true
   },
+  
+  /**
+   *   设置平台
+   * **/
+  setPlatform:(platform)=>{
+    YxCache.platform = platform
+  }
   
   
   
