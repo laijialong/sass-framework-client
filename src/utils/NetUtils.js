@@ -1,6 +1,9 @@
 import YxLogger from 'yx-logger'
 
-var Fly = require("flyio/dist/npm/wx")
+var Fly = require("flyio/dist/npm/wx"); //微信小程序、头条小程序、百度小程序
+if (mpvuePlatform === 'my') { //蚂蚁小程序
+  Fly = require("flyio/dist/npm/ap");
+}
 var fly = new Fly
 fly.config.timeout= 30000;
 
@@ -39,7 +42,17 @@ fly.interceptors.response.use(
   (response) => {
     //只将请求结果的data字段返回
     YxLogger.debug('请求成功:' + response.request.url,JSON.stringify(response.data))
-    return response.data
+    //return response.data
+    if (mpvuePlatform === 'my') { //蚂蚁小程序
+      try{
+        return JSON.parse(response.data)
+      }catch (err){
+        YxLogger.error(Tag, 'response', err.name, err.message)
+        return null;
+      }
+    } else { //微信小程序、头条小程序、百度小程序
+      return response.data
+    }
   },
   (err) => {
     var errInfo = {returnCode:'10000',returnMsg:'请求错误',desc:''}
@@ -61,5 +74,7 @@ fly.interceptors.response.use(
     return errInfo;
   }
 )
+
+
 
 export default fly
