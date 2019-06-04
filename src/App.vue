@@ -26,6 +26,18 @@ export default {
   },
   log () {
     console.log(`log at:${Date.now()}`)
+  },
+
+  onLaunch(){
+    console.log("start enter")
+  },
+
+  onShow(){
+     console.log("当小程序启动，或从后台进入前台显示")
+  },
+
+  onHide(){
+     console.log("当小程序从前台进入后台")
   }
 }
 </script>

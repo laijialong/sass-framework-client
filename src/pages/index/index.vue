@@ -1,6 +1,9 @@
 <template>
   <div @click="clickHandle">
 
+
+
+
     <div class="userinfo" @click="bindViewTap">
       <img class="userinfo-avatar" v-if="userInfo.avatarUrl" :src="userInfo.avatarUrl" background-size="cover" />
       <img class="userinfo-avatar" src="/static/images/user.png" background-size="cover" />
@@ -22,10 +25,22 @@
       <input type="text" class="form-control" v-model.lazy="motto" placeholder="v-model.lazy" />
     </form>
 
+    <!--<div style="font-size: 20px; color: greenyellow">-->
+       <!--<yx-button></yx-button>-->
+    <!--</div>-->
 
-    <div class="all">
-        <div class="left">
-        </div>
+    <!--<div>-->
+      <!--<yx-bb></yx-bb>-->
+    <!--</div>-->
+
+    <div class="row">
+      <div>111</div>
+      <div>222</div>
+    </div>
+
+
+    <div class="all marginLeft col">
+        <div class="left"></div>
         <div class="right">
         </div>
     </div>
@@ -34,6 +49,11 @@
 
 <script>
 import card from '@/components/card'
+
+//import YxButton  from "yxhd-ui"
+//
+import YxBb from 'yx-button'
+import mpcrow from 'mpvue-cropper'
 
 export default {
   data () {
@@ -47,7 +67,10 @@ export default {
   },
 
   components: {
-    card
+    card,
+    //YxButton,
+    YxBb,
+    mpcrow
   },
 
   methods: {
@@ -100,9 +123,11 @@ export default {
   border: 1px solid #ccc;
 }
 .all{
-  width:7.5rem;
-  height:1rem;
   background-color:blue;
+
+  display: flex;
+  flex-direction: column;
+
 }
 .all:after{
   display:block;
