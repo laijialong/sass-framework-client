@@ -1,4 +1,4 @@
-
+//接口地址
 var request = {
   
   common_action:'common_action',
